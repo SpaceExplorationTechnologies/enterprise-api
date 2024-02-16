@@ -26,14 +26,14 @@ python3 -m grpc_tools.protoc -I . --python_out=. --pyi_out=. --grpc_python_out=.
 $ python demo.py
 Sending request to router...
 wifi_get_diagnostics {
-  id: "Router-0100000000000000000A800C"
+  id: "Router-010000000000000000012345"
   hardware_version: "v2"
   software_version: "2024.10.0.mr32019"
 }
 
 Sending request to dish...
 dish_get_diagnostics {
-  id: "ut01000000-00000000-003175ff"
+  id: "ut01000000-00000000-00012345"
   hardware_version: "rev3_proto2"
   software_version: "1da5511b-0179-4a9c-80ad-2e63015b5a70.uterm"
   utc_offset_s: -28799
