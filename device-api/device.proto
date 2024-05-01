@@ -59,6 +59,28 @@ message WifiGetDiagnosticsResponse
 
     /// Software version of the WiFi router.
     string software_version = 3;
+
+    message Network
+    {
+        /// Domain of this network (lan, lan1).
+        string domain = 1;
+
+        /// IPv4 CDIR.
+        string ipv4 = 2;
+
+        /// IPv6 CDIRs.
+        repeated string ipv6 = 3;
+
+        /// Ethernet clients connected to this network.
+        uint32 clients_ethernet = 10;
+
+        /// 2GHz clients connected to this network.
+        uint32 clients_2ghz = 11;
+
+        /// 5GHz clients connected to this network.
+        uint32 clients_5ghz = 12;
+    }
+    repeated Network networks = 4;
 }
 
 /// Diagnostics for the Starlink dish.
@@ -77,7 +99,8 @@ message DishGetDiagnosticsResponse
     int32 utc_offset_s = 4;
 
     /// Result of the hardware self test that the UT runs on boot.
-    enum TestResult {
+    enum TestResult
+    {
         /// No hardware test has been run.
         NO_RESULT = 0;
 
@@ -121,6 +144,10 @@ message DishGetDiagnosticsResponse
 
         /// The dish is moving too fast for its configured policy.
         bool moving_too_fast_for_policy = 9;
+
+        /// Starlink considers this dish obstructed, and performance may be degraded.
+        /// The user should review the terminal field of view and remove obstructions.
+        bool obstructed = 10;
     }
     Alerts alerts = 5;
 
@@ -149,6 +176,26 @@ message DishGetDiagnosticsResponse
 
         /// The user is in a country that is blocked for general service.
         BLOCKED_COUNTRY = 6;
+
+        /// The user has exceeded the data usage quota and sandbox policy has been enforced.
+        DATA_OVERAGE_SANDBOX_POLICY = 7;
     }
     DisablementCode disablement_code = 6;
+
+    message Location
+    {
+        /// Whether local location queries are enabled for this terminal.
+        /// If location is not enabled, the remainder of this message is invalid.
+        bool enabled = 1;
+
+        /// Latitude in degrees [-90, +90].
+        double latitude = 2;
+
+        /// Longtitude in degreees [-180,+180].
+        double longitude = 3;
+
+        /// Altitude in meters above sea level.
+        double altitude_meters = 4;
+    }
+    Location location = 8;
 }
