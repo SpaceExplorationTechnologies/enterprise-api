@@ -196,6 +196,12 @@ message DishGetDiagnosticsResponse
 
         /// Altitude in meters above sea level.
         double altitude_meters = 4;
+        
+        /// Whether the uncertainty_meters field is valid.
+        bool uncertainty_meters_valid = 5;
+
+        /// Estimated position uncertainty. Only valid if uncertainty_meters_valid=true.
+        double uncertainty_meters = 6;
     }
     Location location = 8;
 }
