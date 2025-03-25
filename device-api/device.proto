@@ -1,207 +1,265 @@
 syntax = "proto3";
 package SpaceX.API.Device;
 
-service Device
-{
-    /// Send a single request.
-    rpc Handle(Request) returns (Response);
+service Device {
+  /// Send a single request.
+  rpc Handle(Request) returns (Response);
 }
 
-message ToDevice
-{
-    oneof message
-    {
-        /// A traditional RPC request which expects exactly one response.
-        Request request = 1;
-    }
+message ToDevice {
+  oneof message {
+    /// A traditional RPC request which expects exactly one response.
+    Request request = 1;
+  }
 }
 
-message FromDevice
-{
-    oneof message
-    {
-        /// A traditional RPC response to exactly one request.
-        Response response = 1;
-    }
+message FromDevice {
+  oneof message {
+    /// A traditional RPC response to exactly one request.
+    Response response = 1;
+  }
 }
 
-message Request
-{
-    oneof request
-    {
-        /// Get diagnostics information.
-        GetDiagnosticsRequest get_diagnostics = 6000;
-    }
+message Request {
+  oneof request {
+    /// Get diagnostics information.
+    GetDiagnosticsRequest get_diagnostics = 6000;
+  }
 }
 
-message Response
-{
-    oneof response
-    {
-        WifiGetDiagnosticsResponse wifi_get_diagnostics = 6000;
-        DishGetDiagnosticsResponse dish_get_diagnostics = 6001;
-    }
+message Response {
+  oneof response {
+    WifiGetDiagnosticsResponse wifi_get_diagnostics = 6000;
+    DishGetDiagnosticsResponse dish_get_diagnostics = 6001;
+  }
 }
 
-
-message GetDiagnosticsRequest
-{
-}
+message GetDiagnosticsRequest {}
 
 /// Diagnostics for the Starlink WiFi router.
-message WifiGetDiagnosticsResponse
-{
-    /// Unique identifier of the WiFi router.
-    string id = 1;
+message WifiGetDiagnosticsResponse {
+  /// Unique identifier of the WiFi router.
+  string id = 1;
 
-    /// Hardware version of the WiFi router.
-    string hardware_version = 2;
+  /// Hardware version of the WiFi router.
+  string hardware_version = 2;
 
-    /// Software version of the WiFi router.
-    string software_version = 3;
+  /// Software version of the WiFi router.
+  string software_version = 3;
 
-    message Network
-    {
-        /// Domain of this network (lan, lan1).
-        string domain = 1;
+  message Network {
+    /// Domain of this network (lan, lan1).
+    string domain = 1;
 
-        /// IPv4 CDIR.
-        string ipv4 = 2;
+    /// IPv4 CDIR.
+    string ipv4 = 2;
 
-        /// IPv6 CDIRs.
-        repeated string ipv6 = 3;
+    /// IPv6 CDIRs.
+    repeated string ipv6 = 3;
 
-        /// Ethernet clients connected to this network.
-        uint32 clients_ethernet = 10;
+    /// Ethernet clients connected to this network.
+    uint32 clients_ethernet = 10;
 
-        /// 2GHz clients connected to this network.
-        uint32 clients_2ghz = 11;
+    /// 2GHz clients connected to this network.
+    uint32 clients_2ghz = 11;
 
-        /// 5GHz clients connected to this network.
-        uint32 clients_5ghz = 12;
-    }
-    repeated Network networks = 4;
+    /// 5GHz clients connected to this network.
+    uint32 clients_5ghz = 12;
+  }
+  repeated Network networks = 4;
 }
 
 /// Diagnostics for the Starlink dish.
-message DishGetDiagnosticsResponse
-{
-    /// Unique identifier of the dish.
-    string id = 1;
+message DishGetDiagnosticsResponse {
+  /// Unique identifier of the dish.
+  string id = 1;
 
-    /// Hardware version of the dish.
-    string hardware_version = 2;
+  /// Hardware version of the dish.
+  string hardware_version = 2;
 
-    /// Software version of the dish.
-    string software_version = 3;
+  /// Software version of the dish.
+  string software_version = 3;
 
-    /// Approximate time zone of the device in relation to UTC.
-    int32 utc_offset_s = 4;
+  /// Approximate time zone of the device in relation to UTC.
+  int32 utc_offset_s = 4;
 
-    /// Result of the hardware self test that the UT runs on boot.
-    enum TestResult
-    {
-        /// No hardware test has been run.
-        NO_RESULT = 0;
+  /// Result of the hardware self test that the UT runs on boot.
+  enum TestResult {
+    NO_RESULT = 0;
+    PASSED = 1;
+    FAILED = 2;
+  }
+  TestResult hardware_self_test = 7;
 
-        /// The hardware test passed.
-        PASSED = 1;
+  enum TestResultCode {
+    GENERAL = 0;
+    BOOT_UP = 1;
+    CPU_VOLTAGE = 2;
+    DBF_AAP_CS = 3;
+    DBF_NUM_FEMS = 4;
+    DBF_READ_ERRORS = 5;
+    DBF_T_DIE_0 = 6;
+    DBF_T_DIE_1 = 7;
+    DBF_T_DIE_0_VALID = 8;
+    DBF_T_DIE_1_VALID = 9;
+    ETH_PRIME = 10;
+    EIRP = 11;
+    FEM_CUT = 12;
+    FUSE_AVS = 13;
+    GPS = 14;
+    IMU = 15;
+    PHY = 16;
+    SCP_ERROR = 17;
+    TEMPERATURE = 18;
+    VTSENS = 19;
+  }
 
-        /// The hardware test failed. Something is wrong.
-        FAILED = 2;
-    }
-    TestResult hardware_self_test = 7;
+  /// Error codes returned by the hardware self test.
+  repeated TestResultCode hardware_self_test_codes = 11;
 
-    message Alerts
-    {
-        /// The dish is heating.
-        bool dish_is_heating = 1;
+  message Alerts {
+    /// The dish is heating.
+    bool dish_is_heating = 1;
 
-        /// The dish CPU is throttled because its temperature is too high.
-        bool dish_thermal_throttle = 2;
+    /// The dish CPU is throttled because its temperature is too high.
+    bool dish_thermal_throttle = 2;
 
-        /// The dish is not enabled because its temperature is extremely high.
-        bool dish_thermal_shutdown = 3;
+    /// The dish is not enabled because its temperature is extremely high.
+    bool dish_thermal_shutdown = 3;
 
-        /// The dish is throttled because the temperature of the external power
-        /// supply is too high.
-        bool power_supply_thermal_throttle = 4;
+    /// The dish is throttled because the temperature of the external power
+    /// supply is too high.
+    bool power_supply_thermal_throttle = 4;
 
-        /// The dish motors are stuck, and the dish may not be aligned properly.
-        /// This may happen if something is blocking the movement of the dish.
-        bool motors_stuck = 5;
+    /// The dish motors are stuck, and the dish may not be aligned properly.
+    /// This may happen if something is blocking the movement of the dish.
+    bool motors_stuck = 5;
 
-        /// The dish is not oriented vertically enough and may be impacting service.
-        bool mast_not_near_vertical = 6;
+    /// The dish is not oriented vertically enough and may be impacting service.
+    bool mast_not_near_vertical = 6;
 
-        /// The negotiated ethernet speeds to the dish are low and may be preventing
-        /// maximum service throughput.
-        bool slow_ethernet_speeds = 7;
+    /// The negotiated ethernet speeds to the dish are low and may be preventing
+    /// maximum service throughput.
+    bool slow_ethernet_speeds = 7;
 
-        /// The dish has a software upgrade that is installed, and will be applied
-        /// after the next reboot.
-        bool software_install_pending = 8;
+    /// The dish has a software upgrade that is installed, and will be applied
+    /// after the next reboot.
+    bool software_install_pending = 8;
 
-        /// The dish is moving too fast for its configured policy.
-        bool moving_too_fast_for_policy = 9;
+    /// The dish is moving too fast for its configured policy.
+    bool moving_too_fast_for_policy = 9;
 
-        /// Starlink considers this dish obstructed, and performance may be degraded.
-        /// The user should review the terminal field of view and remove obstructions.
-        bool obstructed = 10;
-    }
-    Alerts alerts = 5;
+    /// Starlink considers this dish obstructed, and performance may be
+    /// degraded. The user should review the terminal field of view and remove
+    /// obstructions.
+    bool obstructed = 10;
+  }
+  Alerts alerts = 5;
 
-    /// The dish may be disabled for a variety of reasons.
-    /// This code may be unknown while the dish is loading state
-    /// of if the dish does not support this metric.
-    enum DisablementCode
-    {
-        // Unknown state.
-        UNKNOWN = 0;
+  /// The dish may be disabled for a variety of reasons.
+  /// This code may be unknown while the dish is loading state
+  /// of if the dish does not support this metric.
+  enum DisablementCode {
+    reserved 5, 9;
+    reserved "INVALID_COUNTRY", "UNLICENSED_COUNTRY";
 
-        /// There is no disablement, things are working fine.
-        OKAY = 1;
+    // Unknown state.
+    UNKNOWN = 0;
 
-        /// No active account, or expired subscription for this user.
-        NO_ACTIVE_ACCOUNT = 2;
+    /// There is no disablement, things are working fine.
+    OKAY = 1;
 
-        /// User is too far from their service address.
-        TOO_FAR_FROM_SERVICE_ADDRESS = 3;
+    /// No active account, or expired subscription for this user.
+    NO_ACTIVE_ACCOUNT = 2;
 
-        /// User is in the Ocean and is not allowed to be.
-        IN_OCEAN = 4;
+    /// User is too far from their service address.
+    TOO_FAR_FROM_SERVICE_ADDRESS = 3;
 
-        /// In a country the user isn't allowed to get service in.
-        INVALID_COUNTRY = 5;
+    /// User is in the Ocean and is not allowed to be.
+    IN_OCEAN = 4;
 
-        /// The user is in a country that is blocked for general service.
-        BLOCKED_COUNTRY = 6;
+    /// The user is in a country that is blocked for general service.
+    BLOCKED_COUNTRY = 6;
 
-        /// The user has exceeded the data usage quota and sandbox policy has been enforced.
-        DATA_OVERAGE_SANDBOX_POLICY = 7;
-    }
-    DisablementCode disablement_code = 6;
+    /// The user has exceeded the data usage quota and sandbox policy has been
+    /// enforced.
+    DATA_OVERAGE_SANDBOX_POLICY = 7;
 
-    message Location
-    {
-        /// Whether local location queries are enabled for this terminal.
-        /// If location is not enabled, the remainder of this message is invalid.
-        bool enabled = 1;
+    /// The user is in a disabled cell.
+    CELL_IS_DISABLED = 8;
 
-        /// Latitude in degrees [-90, +90].
-        double latitude = 2;
+    /// The user is roam restricted, controlled from GCP via policy feature
+    /// value.
+    ROAM_RESTRICTED = 10;
 
-        /// Longtitude in degreees [-180,+180].
-        double longitude = 3;
+    /// The user's location is unknown to perform geo-restriction.
+    UNKNOWN_LOCATION = 11;
 
-        /// Altitude in meters above sea level.
-        double altitude_meters = 4;
-        
-        /// Whether the uncertainty_meters field is valid.
-        bool uncertainty_meters_valid = 5;
+    // The user needs to log in to get more data about their restriction.
+    ACCOUNT_DISABLED = 12;
 
-        /// Estimated position uncertainty. Only valid if uncertainty_meters_valid=true.
-        double uncertainty_meters = 6;
-    }
-    Location location = 8;
+    // The user's terminal is running a old version that is unsupported on the
+    // network.
+    UNSUPPORTED_VERSION = 13;
+
+    // The user's terminal is moving faster than their policy allows for
+    // service.
+    MOVING_TOO_FAST_FOR_POLICY = 14;
+  }
+  DisablementCode disablement_code = 6;
+
+  message Location {
+    /// Whether local location queries are enabled for this terminal.
+    /// If location is not enabled, the remainder of this message is invalid.
+    bool enabled = 1;
+
+    /// Latitude in degrees [-90, +90].
+    double latitude = 2;
+
+    /// Longtitude in degreees [-180,+180].
+    double longitude = 3;
+
+    /// Altitude in meters above sea level.
+    double altitude_meters = 4;
+
+    /// Whether the uncertainty_meters field is valid.
+    bool uncertainty_meters_valid = 5;
+
+    /// Estimated 1-sigma position uncertainty.
+    double uncertainty_meters = 6;
+
+    /// Time of this measurement, in seconds since GPS epoch (Jan 6 1980).
+    double gps_time_s = 7;
+  }
+  Location location = 8;
+
+  message AlignmentStats {
+    /// Boresight is where the dish is currently pointing.
+
+    /// Azimuth is the rotation from the North.
+    /// When Azimuth is 0, the terminal is facing North.
+    /// When Azimuth 90, the terminal is facing East.
+    /// Boresight azimuth is how far the the dish is currently rotated.
+    float boresight_azimuth_deg = 1;
+
+    /// Elevation is tilt from horizontal.
+    /// When elevation is 0, the terminal is vertical.
+    /// When elevation is 90, the terminal is perfectly horizontal.
+    /// Boresight elevation is how far the dish is currently tilted.
+    float boresight_elevation_deg = 2;
+
+    /// Desired boresight azimuth is the ideal rotation of the terminal.
+    /// When desired boresight azimuth is > boresight azimuth, then the terminal
+    /// should be rotated clockwise.
+    float desired_boresight_azimuth_deg = 3;
+
+    /// Desired boresight elevation is the ideal tilt of the terminal using the
+    /// elevation scale. When desired boresight elevation is > boresight
+    /// elevation, then terminal should be tilted horizontally.
+    float desired_boresight_elevation_deg = 4;
+  }
+  AlignmentStats alignment_stats = 9;
+
+  /// Whether the dish is currently stowed.
+  bool stowed = 10;
 }
