@@ -262,4 +262,8 @@ message DishGetDiagnosticsResponse {
 
   /// Whether the dish is currently stowed.
   bool stowed = 10;
+
+  /// True if the dish has consumed all purchased data, is opted out of automatic 
+  /// top-up blocks, and has been rate limited to 1mbps down and 0.5mbps down.
+  bool overage_rate_limited = 14;
 }
